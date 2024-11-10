@@ -1,0 +1,16 @@
+.signup-form {
+    &-field {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 8px;
+        &__label {
+     
+        }
+        &__input {
+
+        }
+    }
+    &-field-container {
+        margin-bottom: 12px;
+    }
+}
