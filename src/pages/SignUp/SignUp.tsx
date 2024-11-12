@@ -1,14 +1,17 @@
 import { useState } from "react";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import "./scss/SignUp.scss";
-import { auth } from "../../firebaseConfig";
+import { auth, db } from "../../firebaseConfig";
 import { doc, setDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
+import { Url_Dashboard } from "../../utils/routeHelper";
 
 const SignUp = () => {
 
     // const [fullName, setFullName] = useState<string>("")
     // const [email, setEmail] = useState<string>("")
     // const [password, setPassword] = useState<string>("")
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         fullName: "",
@@ -28,25 +31,27 @@ const SignUp = () => {
     // todo: might consider using formik or hook form for form management:
     
     const handleSubmit = async (e) => {
-        e.preventDefault(); // Prevents page reload
+        e.preventDefault();
         console.log("Form data submitted:", formData);
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+            console.log('userCredential:', userCredential)
             const user =  userCredential.user;
             if (user) {
-                await createUserProfile(user.uid, email);
+                await createUserProfile(user.uid, user.email ?? "");
             }
           } catch (error) {
             console.error("Error signing up:", error);
           }
     };
 
-    const createUserProfile = async (userId: string, email: string) => {
+    const createUserProfile = async (userId: string, email?: string) => {
         try {
             await setDoc(doc(db, "users", userId), {
                 email,
                 createdAt: new Date(),
             });
+            navigate(Url_Dashboard)
         } catch (error) {
             console.error("Error creating user profile:", error);
         }
