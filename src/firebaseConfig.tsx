@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore, addDoc, collection } from "firebase/firestore";
+import { getFirestore } from "firebase/firestore";
 
 // todo: bunları env'ye al: 
 const firebaseConfig = {

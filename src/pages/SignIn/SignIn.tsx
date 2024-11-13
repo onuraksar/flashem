@@ -49,7 +49,7 @@ const SignIn = () => {
                     <input type="password" name="password"  value={formData.password} onChange={handleChange} />
                 </div>
             </div>
-            <button type="submit">Register</button>                
+            <button type="submit">Sign In</button>                
         </form>
     </div>
     )
