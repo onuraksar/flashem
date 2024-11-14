@@ -1,12 +1,20 @@
 import { faDumbbell, faGear, faHeart, faHouse, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./scss/SideMenu.scss";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../stores/store";
+import { clearUser } from "../../stores/userSlice";
+import { Url_Sign_In } from "../../utils/routeHelper";
 
 const SideMenu = () => {
+    const dispatch = useDispatch<AppDispatch>();
+    const navigate = useNavigate()
+    
     return <div className="sidemenu">
         <div className="sidemenu__container">
-            <NavLink to="/dashboard" className="sidemenu-item" >
+            {/* todo: add active style if active */}
+            <NavLink to="/dashboard" className="sidemenu-item">
                 <div className="sidemenu-item__icon"><FontAwesomeIcon icon={faHouse}/></div>
                 <div className="sidemenu-item__label">Dashboard</div>
             </NavLink>
@@ -32,7 +40,11 @@ const SideMenu = () => {
             </NavLink>
         </div>
         <div className="sidemenu__footer">
-            <button className="signout-btn">Sign Out</button>
+            <button onClick={(e) => {
+                e.preventDefault();
+                dispatch(clearUser());
+                navigate(Url_Sign_In)
+            }} className="signout-btn">Sign Out</button>
         </div>
     </div> 
 }

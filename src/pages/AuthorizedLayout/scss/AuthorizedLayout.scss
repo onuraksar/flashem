@@ -1,0 +1,13 @@
+.authorized-layout {
+    position: relative;
+    height: 100vh;
+    &__container {
+        width: calc(100% - 140px);
+        height: calc(100% - 64px);
+        padding: 12px;
+        position: absolute;
+        top: 64px;
+        left: 140px;
+        overflow: auto;        
+    }
+}

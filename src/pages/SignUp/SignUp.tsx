@@ -27,7 +27,6 @@ const SignUp = () => {
         });
     };
 
-    // todo: might consider using ui library for inputs
     // todo: might consider using formik or hook form for form management:
     
     const handleSubmit = async (e) => {

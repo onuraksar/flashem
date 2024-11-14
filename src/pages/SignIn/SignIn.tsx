@@ -3,10 +3,13 @@ import { useState } from "react";
 import { auth } from "../../firebaseConfig";
 import { useNavigate } from "react-router-dom";
 import { Url_Dashboard } from "../../utils/routeHelper";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../stores/userSlice";
 
 const SignIn = () => {
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const [formData, setFormData] = useState({
         email: "",
@@ -24,10 +27,12 @@ const SignIn = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log("Form data submitted:", formData);
+        // todo: add toast message when the password is not correct
         try {
             const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
             console.log('userCredential', userCredential)
             if(userCredential.user) {
+                dispatch(setUser({ id: userCredential.user.uid, email: userCredential.user.email ?? "" }));
                 navigate(Url_Dashboard)
             }
         } catch (error) {

@@ -8,7 +8,8 @@
     width: 140px;
     height: calc(100vh - 64px);
     position: absolute;
-    bottom: 0;
+    top: 64px;
+    left: 0;
     background-color: $background;
     border-right: 1px solid $border;
     &__container {
@@ -39,10 +40,12 @@
 .sidemenu-item {
     display: flex;
     align-items: center;
-    padding: 4px;
+    padding: 4px 8px;
     border: 1px solid $border;
+    outline: 1px solid transparent;
     border-radius: $radius-btn;
     cursor: pointer;
+    transition: all 0.3s ease;
     &__icon {
         svg {
             color: $primary;
@@ -52,5 +55,14 @@
         margin-left: 8px;
         font-size: 12px;
         color: $primary;
+    }
+    &.active {
+
+    }
+    &:hover {
+        outline: 1px solid $border;
+        // .sidemenu-item__label {
+        //     text-decoration: underline;
+        // }
     }
 }

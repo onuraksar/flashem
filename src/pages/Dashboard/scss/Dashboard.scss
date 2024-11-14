@@ -1,4 +1,49 @@
-.dashboard-container {
-    height: 100vh;
-    width: 100%;
+@use "../../../scss/template.scss" as *;
+
+.dashboard {
+    height: 100%;
+    &__greeting {
+        &__header {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        &__subtext {
+            font-size: 12px;
+            font-weight: 300;
+        }
+        margin-bottom: 24px;
+    }
+    &__content {
+        &__sets {
+            &__top {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                border-bottom: 1px solid $border;
+                padding: 4px 0;
+                &__title, &__action {
+                    font-size: 14px;
+                }
+                &__action {
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+                    &__btn {
+                        border: none;
+                        background-color: transparent;
+                        padding: 0;
+                    }
+                }
+            }
+            &__bottom {
+
+            }
+        }
+    }
+}
+
+.dashboard-item {
+    &__title {
+
+    }
 }
