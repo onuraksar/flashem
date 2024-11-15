@@ -26,11 +26,9 @@ const SignIn = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Form data submitted:", formData);
         // todo: add toast message when the password is not correct
         try {
             const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
-            console.log('userCredential', userCredential)
             if(userCredential.user) {
                 dispatch(setUser({ id: userCredential.user.uid, email: userCredential.user.email ?? "" }));
                 navigate(Url_Dashboard)

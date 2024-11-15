@@ -5,12 +5,10 @@ import { auth, db } from "../../firebaseConfig";
 import { doc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { Url_Dashboard } from "../../utils/routeHelper";
+import { defaultCategories } from "../../settings/categorySettings";
 
 const SignUp = () => {
 
-    // const [fullName, setFullName] = useState<string>("")
-    // const [email, setEmail] = useState<string>("")
-    // const [password, setPassword] = useState<string>("")
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
@@ -31,10 +29,8 @@ const SignUp = () => {
     
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Form data submitted:", formData);
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-            console.log('userCredential:', userCredential)
             const user =  userCredential.user;
             if (user) {
                 await createUserProfile(user.uid, user.email ?? "");
@@ -49,6 +45,10 @@ const SignUp = () => {
             await setDoc(doc(db, "users", userId), {
                 email,
                 createdAt: new Date(),
+            });
+            await setDoc(doc(db, "users", userId), {
+                categories: defaultCategories,
+                sets: {},
             });
             navigate(Url_Dashboard)
         } catch (error) {
