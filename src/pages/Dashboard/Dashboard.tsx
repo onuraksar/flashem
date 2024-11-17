@@ -1,19 +1,63 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { useState } from "react";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import { useEffect, useRef, useState } from "react";
+import { Button, Input, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import NewSetForm from "./DashboardNewSetForm";
 import "./scss/Dashboard.scss";
+import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
+import store from "../../stores/store";
 
 const Dashboard = () => {
+    const mounted = useRef(true)
+
+    const userId = store.getState()?.user?.user?.id
 
     const [isNewSetModalOpen, setIsNewSetModalOpen] = useState<boolean>(false)
     const toggleNewSetModal = () => setIsNewSetModalOpen(!isNewSetModalOpen)
+
+    const [sets, setSets] = useState<any[]>([]);
+    const [categories, setCategories] = useState<any>([])
+
+    const [selectedCategoryId, setSelectedCategoryId] = useState<string>("all")
+
 
     const handleNewSetClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
         setIsNewSetModalOpen(true)
     }
+
+    const fetchSetsByCategory = async (categoryId: string) => {
+        const setsRef = collection(db, `users/${userId}/sets`);
+        const setsQuery = query(setsRef, where("categoryId", "==", categoryId));
+        const querySnapshot = await getDocs(setsQuery);
+        const filteredSets = querySnapshot.docs.map(doc => doc.data());
+        setSets(filteredSets)
+    };
+
+    const fetchCategories = async (uid: string) => {
+        try {
+            // todo: create a getDoc function to make it global to prevent importing doc, db for all instances:
+          const userDoc = await getDoc(doc(db, "users", uid));
+          const userData = userDoc.data();
+          setCategories(userData?.categories || []);
+        } catch (error) {
+          console.error("Error fetching categories:", error);
+        }
+    }
+
+    useEffect(() => {
+        if(mounted.current && userId) {
+            fetchCategories(userId)
+        }
+        return () => {
+            mounted.current = false
+        }
+    }, [])
+
+    useEffect(() => {
+        fetchSetsByCategory(selectedCategoryId)
+    }, [selectedCategoryId, userId])
 
     return (
         <>
@@ -40,6 +84,24 @@ const Dashboard = () => {
                     <div className="dashboard__content__sets">
                         <div className="dashboard__content__sets__top">
                             <div className="dashboard__content__sets__top__title">My Sets</div>
+                            <div className="dashboard__content__sets__top__filter">
+                                <Input
+                                    id="categoryId"
+                                    name="categoryId"
+                                    type="select"
+                                    onChange={(e) => {
+                                        setSelectedCategoryId(e.target.value)
+                                    }}
+                                    // value={se}
+                                >
+                                    <option value="all" selected >All</option>
+                                    {categories?.map((category: any) => (
+                                        <option key={category.id} value={category.id}>
+                                            {category.name}
+                                        </option>
+                                    ))}
+                                </Input>
+                            </div>
                             <div className="dashboard__content__sets__top__action">
                                 <FontAwesomeIcon icon={faPlus} />
                                 <button onClick={handleNewSetClick} className="dashboard__content__sets__top__action__btn">Add New Set</button>
@@ -47,16 +109,24 @@ const Dashboard = () => {
                         </div>
                         <div className="dashboard__content__sets__bottom">
                             <div className="dashboard__content__sets__bottom__container">
-                                <div className="set-item">
-                                    <div className="set-item__title">Deutsch</div>
-                                </div>
+                                {/* todo: add Loading: */}
+                                {sets.length === 0 ? (
+                                    <p>No sets available.</p>
+                                ) : (
+                                    sets.map((set, index) => (
+                                        <div key={index} className="set-item">
+                                            <div className="set-item__title">{set.name}</div>
+                                            <p>Category: {set.categoryId}</p>
+                                            <p>Created at: {new Date(set.createdAt.seconds).toLocaleString()}</p>
+                                        </div>
+                                    ))
+                                )}
                             </div>
-
                         </div>
                     </div>
-                    <div className="dashboard__content__scores">
+                    {/* <div className="dashboard__content__scores">
                         Scores
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </>

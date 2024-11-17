@@ -1,6 +1,6 @@
-import { arrayUnion, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { arrayUnion, collection, doc, getDoc, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { FormEvent, useEffect, useRef, useState } from "react";
-import { Button, Form, FormGroup, Input, Label } from "reactstrap";
+import { Form, FormGroup, Input, Label } from "reactstrap";
 import { db } from "../../firebaseConfig";
 import store from "../../stores/store";
 import { v4 as uuidv4 } from 'uuid';
@@ -14,7 +14,7 @@ const DashboardNewSetForm = () => {
     // todo: add model for this any:
     const [categories, setCategories] = useState<any>([])
 
-    const [formData, setFormData] = useState({ setName: "", setCategory: "" });
+    const [formData, setFormData] = useState({ name: "", categoryId: "", categoryName: "" });
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
@@ -32,25 +32,38 @@ const DashboardNewSetForm = () => {
         }
     }
 
-    const createSet = async (setName: string, setCategoryId: string) => {
+    const createSet = async (name: string, categoryId: string ) => {
         if(userId) {
             const newSet = {
-                id: uuidv4(),
-                setName,
-                setCategoryId,
-                createdAt: new Date(),
-                flashCards: []
+                name,
+                categoryId,
+                createdAt: new Date()
             };
             await updateDoc(doc(db, "users", userId), {
-                sets: arrayUnion(newSet)
+                [`sets.${uuidv4()}`]: newSet
             });
+            // todo: refresh list data background
         }
     };
+
+    // const deleteSet = async (uid: string, setId: string) => {
+    //     const userRef = doc(db, "users", uid);
+      
+    //     const userDoc = await getDoc(userRef);
+    //     const sets = userDoc.data()?.sets || [];
+      
+    //     const setToDelete = sets.find(set => set.id === setId);
+    //     if (setToDelete) {
+    //       await updateDoc(userRef, {
+    //         sets: arrayRemove(setToDelete),
+    //       });
+    //     }
+    // };
 
     const handleSubmit = (e: FormEvent) => {
         // todo: add validation
         e.preventDefault()
-        createSet(formData.setName, formData.setCategory)
+        createSet(formData.name, formData.categoryId)
     }   
     
     useEffect(() => {
@@ -65,18 +78,18 @@ const DashboardNewSetForm = () => {
     return(
         <Form onSubmit={handleSubmit} id="dashboardNewSetForm">
             <FormGroup>
-                <Label for="setName">Set Name:</Label>
-                <Input id="setName" name="setName" type="text" value={formData.setName} onChange={handleInputChange} />
+                <Label for="name">Set Name:</Label>
+                <Input id="name" name="name" type="text" value={formData.name} onChange={handleInputChange} />
             </FormGroup>
             <FormGroup>
-                <Label for="setCategory">Set Category</Label>
+                <Label for="categoryId">Set Category</Label>
                 {/* todo: add info tooltip here to inform user to add categories from settings */}
                 <Input
-                    id="setCategory"
-                    name="setCategory"
+                    id="categoryId"
+                    name="categoryId"
                     type="select"
                     onChange={handleInputChange}
-                    value={formData.setCategory}
+                    value={formData.categoryId}
                 >
                     <option value="" selected disabled hidden>Choose here</option>
                     {categories?.map((category: any) => (
