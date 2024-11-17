@@ -8,6 +8,8 @@ import AuthorizedLayout from './pages/AuthorizedLayout/AuthorizedLayout'
 import NotFound from './pages/NotFound/NotFound'
 import { isAuthorized } from './utils/session'
 
+// todo: add route elements lazy
+
 const App = () => {
 
   return (

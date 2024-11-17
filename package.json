@@ -24,7 +24,8 @@
     "react-router-dom": "^6.28.0",
     "reactstrap": "^9.2.3",
     "redux-persist": "^6.0.0",
-    "sass": "^1.80.6"
+    "sass": "^1.80.6",
+    "uuid": "^11.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",

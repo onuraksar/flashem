@@ -1,0 +1,1 @@
+export const timeOutMiliseconds = 20 * 60 * 1000;

@@ -46,6 +46,7 @@
     border-radius: $radius-btn;
     cursor: pointer;
     transition: all 0.3s ease;
+    $self: &;
     &__icon {
         svg {
             color: $primary;
@@ -57,7 +58,12 @@
         color: $primary;
     }
     &.active {
-
+        border-color: $accent !important;
+        #{$self} {
+            &__label, &__icon svg {
+                color: $accent;
+            }
+        }
     }
     &:hover {
         outline: 1px solid $border;

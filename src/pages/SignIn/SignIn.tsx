@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Url_Dashboard } from "../../utils/routeHelper";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../stores/userSlice";
+import { cookieLastActivityKey, setCookie } from "../../utils/cookieHelper";
 
 const SignIn = () => {
 
@@ -31,6 +32,7 @@ const SignIn = () => {
             const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
             if(userCredential.user) {
                 dispatch(setUser({ id: userCredential.user.uid, email: userCredential.user.email ?? "" }));
+                setCookie(cookieLastActivityKey, new Date().toISOString());
                 navigate(Url_Dashboard)
             }
         } catch (error) {

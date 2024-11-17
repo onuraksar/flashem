@@ -33,22 +33,21 @@ const SignUp = () => {
             const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
             const user =  userCredential.user;
             if (user) {
-                await createUserProfile(user.uid, user.email ?? "");
+                await createUserProfile(user.uid, formData.fullName, user.email ?? "", );
             }
           } catch (error) {
             console.error("Error signing up:", error);
           }
     };
 
-    const createUserProfile = async (userId: string, email?: string) => {
+    const createUserProfile = async (userId: string, fullName: string, email?: string) => {
         try {
             await setDoc(doc(db, "users", userId), {
+                fullName,
                 email,
                 createdAt: new Date(),
-            });
-            await setDoc(doc(db, "users", userId), {
                 categories: defaultCategories,
-                sets: {},
+                sets: []
             });
             navigate(Url_Dashboard)
         } catch (error) {
