@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard/Dashboard'
 import PublicLayout from './pages/PublicLayout/PublicLayout'
 import AuthorizedLayout from './pages/AuthorizedLayout/AuthorizedLayout'
 import NotFound from './pages/NotFound/NotFound'
+import SetDetial from './pages/SetDetail/SetDetail'
 import { isAuthorized } from './utils/session'
 
 // todo: add route elements lazy
@@ -35,6 +36,16 @@ const App = () => {
             element={
               isAuthorized() ? (
                 <Dashboard />
+              ) : (
+                <Navigate to="/signin" replace />
+              )
+            }
+          />
+          <Route
+            path="/sets"
+            element={
+              isAuthorized() ? (
+                <SetDetial />
               ) : (
                 <Navigate to="/signin" replace />
               )

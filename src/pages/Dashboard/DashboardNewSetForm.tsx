@@ -44,20 +44,6 @@ const DashboardNewSetForm = () => {
         }
     };
 
-    // const deleteSet = async (uid: string, setId: string) => {
-    //     const userRef = doc(db, "users", uid);
-      
-    //     const userDoc = await getDoc(userRef);
-    //     const sets = userDoc.data()?.sets || [];
-      
-    //     const setToDelete = sets.find(set => set.id === setId);
-    //     if (setToDelete) {
-    //       await updateDoc(userRef, {
-    //         sets: arrayRemove(setToDelete),
-    //       });
-    //     }
-    // };
-
     const handleSubmit = (e: FormEvent) => {
         // todo: add validation
         e.preventDefault()

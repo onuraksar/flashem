@@ -1,10 +1,10 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowAltCircleRight, faEdit, faPlus, faRightLeft, faRightLong, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faArrowAltCircleRight, faEdit, faEye, faPlus, faRightLeft, faRightLong, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useRef, useState } from "react";
 import { Button, Input, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import NewSetForm from "./DashboardNewSetForm";
 import "./scss/Dashboard.scss";
-import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import store from "../../stores/store";
 import { NavLink } from "react-router-dom";
@@ -21,7 +21,7 @@ const Dashboard = () => {
     const [categories, setCategories] = useState<any>([])
 
     const [selectedCategoryId, setSelectedCategoryId] = useState<string>("all")
-
+    const [selectedSetId, setSelectedSetId] = useState<string>()
 
     const handleNewSetClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
@@ -48,6 +48,24 @@ const Dashboard = () => {
         } catch (error) {
           console.error("Error fetching categories:", error);
         }
+    }
+
+    const onSetDelete = async (setId: string) => {
+        try {
+            // Reference the specific set document within the user's sets subcollection
+            const setDocRef = doc(db, `users/${userId}/sets/${setId}`);
+
+            // Delete the document
+            await deleteDoc(setDocRef);
+            
+            console.log(`Set with ID ${setId} deleted successfully.`);
+        } catch (error) {
+            console.error("Error deleting set:", error);
+        }
+    };
+
+    const onSetEdit = (id: string) => {
+        // todo: Open Set Form, apply selectedSet's data to form, pass isEdit prop to determine to add or edit function in the form
     }
 
     useEffect(() => {
@@ -106,8 +124,10 @@ const Dashboard = () => {
                                 </Input>
                             </div>
                             <div className="dashboard__content__sets__top__action">
-                                <FontAwesomeIcon icon={faPlus} />
-                                <button onClick={handleNewSetClick} className="dashboard__content__sets__top__action__btn">Add New Set</button>
+                                <button onClick={handleNewSetClick} className="dashboard__content__sets__top__action__btn">
+                                    <FontAwesomeIcon icon={faPlus} />
+                                    <span>Add New Set</span>
+                                </button>
                             </div>
                         </div>
                         <div className="dashboard__content__sets__bottom">
@@ -117,15 +137,22 @@ const Dashboard = () => {
                                     <p>No sets available.</p>
                                 ) : (
                                     sets.map(set => (
-                                        <NavLink className="set-item" to={`/sets/id?=${btoa(set.id)}`}>
+                                        <div className="set-item">
                                             <div className="set-item__title">
                                                 {set.name}
                                             </div>
                                             <div className="set-item__action">
-                                                <Button><FontAwesomeIcon icon={faEdit} /></Button>
-                                                <Button><FontAwesomeIcon icon={faTrash} /></Button>
+                                                <NavLink to={`/sets?id=${btoa(set.id)}`}>
+                                                    <FontAwesomeIcon icon={faEye} />
+                                                </NavLink>
+                                                <Button onClick={() => onSetEdit(set.id)}>
+                                                    <FontAwesomeIcon icon={faEdit} />
+                                                </Button>
+                                                <Button onClick={() => {onSetDelete(set.id)}}>
+                                                    <FontAwesomeIcon icon={faTrash} />
+                                                </Button>
                                             </div>
-                                        </NavLink>
+                                        </div>
                                     ))
                                 )}
                             </div>
