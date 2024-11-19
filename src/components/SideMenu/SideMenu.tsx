@@ -6,6 +6,8 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../stores/store";
 import { clearUser } from "../../stores/userSlice";
 import { Url_Sign_In } from "../../utils/routeHelper";
+import { signOut } from "firebase/auth";
+import { auth } from "../../firebaseConfig";
 
 const SideMenu = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -44,6 +46,7 @@ const SideMenu = () => {
                 e.preventDefault();
                 dispatch(clearUser());
                 navigate(Url_Sign_In)
+                signOut(auth)
             }} className="signout-btn">Sign Out</button>
         </div>
     </div> 

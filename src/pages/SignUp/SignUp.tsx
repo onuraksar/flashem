@@ -46,8 +46,7 @@ const SignUp = () => {
                 fullName,
                 email,
                 createdAt: new Date(),
-                categories: defaultCategories,
-                sets: {}
+                categories: defaultCategories
             });
             navigate(Url_Dashboard)
         } catch (error) {

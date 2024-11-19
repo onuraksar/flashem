@@ -6,6 +6,8 @@ import { cookieLastActivityKey, getCookie } from "../utils/cookieHelper";
 import { timeOutMiliseconds } from "../utils/constants";
 import { Url_Sign_In } from "../utils/routeHelper";
 import { AppDispatch } from "../stores/store";
+import { auth } from "../firebaseConfig";
+import { signOut } from "firebase/auth";
 
 const useSessionTimeout = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -19,6 +21,7 @@ const useSessionTimeout = () => {
         if (elapsedTime > timeOutMiliseconds) {
              // todo: add toast message: Your session has ended, redirecting to sign in page.
             dispatch(clearUser());
+            signOut(auth)
             navigate(Url_Sign_In);
         }
     }, [dispatch, navigate]);

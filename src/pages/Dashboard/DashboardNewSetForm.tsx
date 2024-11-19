@@ -1,4 +1,4 @@
-import { arrayUnion, collection, doc, getDoc, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { collection, doc, getDoc, addDoc } from "firebase/firestore";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { Form, FormGroup, Input, Label } from "reactstrap";
 import { db } from "../../firebaseConfig";
@@ -37,12 +37,10 @@ const DashboardNewSetForm = () => {
             const newSet = {
                 name,
                 categoryId,
-                createdAt: new Date()
+                createdAt: new Date(),
             };
-            await updateDoc(doc(db, "users", userId), {
-                [`sets.${uuidv4()}`]: newSet
-            });
-            // todo: refresh list data background
+            const setsCollectionRef = collection(db, `users/${userId}/sets`);
+            await addDoc(setsCollectionRef, newSet);
         }
     };
 

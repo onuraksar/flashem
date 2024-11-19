@@ -36,14 +36,37 @@
                 }
             }
             &__bottom {
+                padding: 12px;
+                &__container {
+                    display: flex;
+                    gap: 12px;
 
+                }
             }
         }
     }
 }
 
-.dashboard-item {
+.set-item {
+    border: 1px solid $border;
+    width: 300px;
+    height: 64px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    gap: 8px;
+    border-radius: 8px;
     &__title {
-
+        color: $primary;
+    }
+    &__action {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    &:hover {
+        border-color: $accent;
     }
 }

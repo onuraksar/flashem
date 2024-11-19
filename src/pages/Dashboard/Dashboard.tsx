@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faArrowAltCircleRight, faEdit, faPlus, faRightLeft, faRightLong, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useRef, useState } from "react";
 import { Button, Input, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import NewSetForm from "./DashboardNewSetForm";
@@ -7,6 +7,7 @@ import "./scss/Dashboard.scss";
 import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import store from "../../stores/store";
+import { NavLink } from "react-router-dom";
 
 const Dashboard = () => {
     const mounted = useRef(true)
@@ -29,9 +30,12 @@ const Dashboard = () => {
 
     const fetchSetsByCategory = async (categoryId: string) => {
         const setsRef = collection(db, `users/${userId}/sets`);
-        const setsQuery = query(setsRef, where("categoryId", "==", categoryId));
+        const setsQuery = categoryId === "all" ? setsRef : query(setsRef, where("categoryId", "==", categoryId));
         const querySnapshot = await getDocs(setsQuery);
-        const filteredSets = querySnapshot.docs.map(doc => doc.data());
+        const filteredSets = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
         setSets(filteredSets)
     };
 
@@ -92,7 +96,6 @@ const Dashboard = () => {
                                     onChange={(e) => {
                                         setSelectedCategoryId(e.target.value)
                                     }}
-                                    // value={se}
                                 >
                                     <option value="all" selected >All</option>
                                     {categories?.map((category: any) => (
@@ -113,12 +116,16 @@ const Dashboard = () => {
                                 {sets.length === 0 ? (
                                     <p>No sets available.</p>
                                 ) : (
-                                    sets.map((set, index) => (
-                                        <div key={index} className="set-item">
-                                            <div className="set-item__title">{set.name}</div>
-                                            <p>Category: {set.categoryId}</p>
-                                            <p>Created at: {new Date(set.createdAt.seconds).toLocaleString()}</p>
-                                        </div>
+                                    sets.map(set => (
+                                        <NavLink className="set-item" to={`/sets/id?=${btoa(set.id)}`}>
+                                            <div className="set-item__title">
+                                                {set.name}
+                                            </div>
+                                            <div className="set-item__action">
+                                                <Button><FontAwesomeIcon icon={faEdit} /></Button>
+                                                <Button><FontAwesomeIcon icon={faTrash} /></Button>
+                                            </div>
+                                        </NavLink>
                                     ))
                                 )}
                             </div>
