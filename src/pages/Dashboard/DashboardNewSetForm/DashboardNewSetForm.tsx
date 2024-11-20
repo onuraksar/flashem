@@ -1,12 +1,15 @@
-import { collection, doc, getDoc, addDoc } from "firebase/firestore";
+import { collection, doc, getDoc, addDoc, updateDoc } from "firebase/firestore";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { Form, FormGroup, Input, Label } from "reactstrap";
-import { db } from "../../firebaseConfig";
-import store from "../../stores/store";
-import { v4 as uuidv4 } from 'uuid';
-import { defaultCategories } from "../../settings/categorySettings";
+import { db } from "../../../firebaseConfig";
+import store from "../../../stores/store";
+import { DashboardNewSetFormProps } from "./types/DashboardNewSetFormProps";
 
-const DashboardNewSetForm = () => {
+const DashboardNewSetForm = (dashboardNewSetFormProps: DashboardNewSetFormProps) => {
+
+    // todo: refactor this page (add loading, refreshEvent, maybe hookform, prevent rerendering, better prop statement, validation)
+
+    const { data, refreshEvent } = dashboardNewSetFormProps;
 
     const mounted = useRef(true)
     
@@ -14,7 +17,7 @@ const DashboardNewSetForm = () => {
     // todo: add model for this any:
     const [categories, setCategories] = useState<any>([])
 
-    const [formData, setFormData] = useState({ name: "", categoryId: "", categoryName: "" });
+    const [formData, setFormData] = useState(data ?? { name: "", categoryId: "", categoryName: "" });
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
@@ -44,10 +47,25 @@ const DashboardNewSetForm = () => {
         }
     };
 
+    const updateSet = async (setId: string, name?: string, categoryId?: string ) => {
+        if (userId) {
+          const setDocRef = doc(db, `users/${userId}/sets`, setId);
+          await updateDoc(setDocRef, {name: name, categoryId: categoryId});
+          if(refreshEvent) 
+            refreshEvent()
+        }
+    };
+
     const handleSubmit = (e: FormEvent) => {
         // todo: add validation
         e.preventDefault()
-        createSet(formData.name, formData.categoryId)
+        if(data) {
+            updateSet(data.id, formData.name, formData.categoryId)
+        } else {
+            createSet(formData.name, formData.categoryId)
+        }
+        if(refreshEvent)
+            refreshEvent()
     }   
     
     useEffect(() => {
@@ -58,6 +76,7 @@ const DashboardNewSetForm = () => {
             mounted.current = false
         }
     }, [])
+
 
     return(
         <Form onSubmit={handleSubmit} id="dashboardNewSetForm">

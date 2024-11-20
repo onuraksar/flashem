@@ -21,6 +21,11 @@
     &__left, &__right {
         padding: 8px;
     }
+    &__right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
 
 }
 

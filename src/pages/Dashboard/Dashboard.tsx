@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowAltCircleRight, faEdit, faEye, faPlus, faRightLeft, faRightLong, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useRef, useState } from "react";
 import { Button, Input, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-import NewSetForm from "./DashboardNewSetForm";
+import NewSetForm from "./DashboardNewSetForm/DashboardNewSetForm";
 import "./scss/Dashboard.scss";
 import { collection, deleteDoc, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
@@ -17,7 +17,13 @@ const Dashboard = () => {
     const [isNewSetModalOpen, setIsNewSetModalOpen] = useState<boolean>(false)
     const toggleNewSetModal = () => setIsNewSetModalOpen(!isNewSetModalOpen)
 
-    const [sets, setSets] = useState<any[]>([]);
+    const [sets, setSets] = useState<{
+        id: string,
+        name: string,
+        categoryId: string,
+        categoryName: string
+    }[]>([]);
+
     const [categories, setCategories] = useState<any>([])
 
     const [selectedCategoryId, setSelectedCategoryId] = useState<string>("all")
@@ -57,7 +63,7 @@ const Dashboard = () => {
 
             // Delete the document
             await deleteDoc(setDocRef);
-            
+            refreshEvent()
             console.log(`Set with ID ${setId} deleted successfully.`);
         } catch (error) {
             console.error("Error deleting set:", error);
@@ -65,7 +71,14 @@ const Dashboard = () => {
     };
 
     const onSetEdit = (id: string) => {
+        setSelectedSetId(id)
+        toggleNewSetModal()
         // todo: Open Set Form, apply selectedSet's data to form, pass isEdit prop to determine to add or edit function in the form
+    }
+
+    const refreshEvent = async() => {
+        await fetchSetsByCategory(selectedCategoryId)
+        setIsNewSetModalOpen(false)
     }
 
     useEffect(() => {
@@ -83,10 +96,11 @@ const Dashboard = () => {
 
     return (
         <>
-            <Modal isOpen={isNewSetModalOpen} toggle={toggleNewSetModal}>
-                <ModalHeader toggle={toggleNewSetModal}>Add New Set</ModalHeader>
+            {/* todo: make a modal component instead: */}
+            <Modal isOpen={isNewSetModalOpen} onClosed={() => setSelectedSetId(undefined)} toggle={toggleNewSetModal}>
+                <ModalHeader toggle={toggleNewSetModal}>{selectedSetId ? "Edit Set" : "Add New Set"} </ModalHeader>
                 <ModalBody>
-                    <NewSetForm />
+                    <NewSetForm data={sets.find(set => set.id === selectedSetId)} refreshEvent={refreshEvent} />
                 </ModalBody>
                 <ModalFooter>
                     <Button color="primary" type="submit" form="dashboardNewSetForm">

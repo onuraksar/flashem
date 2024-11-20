@@ -3,6 +3,7 @@
 .dashboard {
     height: 100%;
     &__greeting {
+        margin-bottom: 24px;
         &__header {
             font-size: 16px;
             font-weight: 600;
@@ -11,7 +12,6 @@
             font-size: 12px;
             font-weight: 300;
         }
-        margin-bottom: 24px;
     }
     &__content {
         &__sets {
