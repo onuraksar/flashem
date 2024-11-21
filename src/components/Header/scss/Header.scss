@@ -56,3 +56,14 @@
         }
     }
 }
+
+.flashcard-toast-message {
+    &__title {
+        font-size: 14px;
+    }
+    &__link {
+        font-size: 12px;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+}

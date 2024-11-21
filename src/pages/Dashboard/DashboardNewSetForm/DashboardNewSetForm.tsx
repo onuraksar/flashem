@@ -77,7 +77,6 @@ const DashboardNewSetForm = (dashboardNewSetFormProps: DashboardNewSetFormProps)
         }
     }, [])
 
-
     return(
         <Form onSubmit={handleSubmit} id="dashboardNewSetForm">
             <FormGroup>

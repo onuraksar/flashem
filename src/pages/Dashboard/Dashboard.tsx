@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowAltCircleRight, faEdit, faEye, faPlus, faRightLeft, faRightLong, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faEye, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useRef, useState } from "react";
 import { Button, Input, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import NewSetForm from "./DashboardNewSetForm/DashboardNewSetForm";
@@ -31,7 +31,7 @@ const Dashboard = () => {
 
     const handleNewSetClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
-        setIsNewSetModalOpen(true)
+        toggleNewSetModal()
     }
 
     const fetchSetsByCategory = async (categoryId: string) => {

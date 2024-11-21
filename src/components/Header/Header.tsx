@@ -4,14 +4,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useRef, useState } from "react";
 import "./scss/Header.scss";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { addDoc, collection, getDocs } from "firebase/firestore";
 import store from "../../stores/store";
 import { db } from "../../firebaseConfig";
+import { toast } from "react-toastify";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const Header = () => {
 
     const userId = store.getState()?.user?.user?.id
     const mounted = useRef(true)
+    const navigate = useNavigate()
     const [formData, setFormData] = useState<any>({ front: "", back: "", setId: "" })
 
     const [isAddFlashCardModalOpen, setIsAddFlashCardModalOpen] = useState<boolean>(false)
@@ -19,16 +22,25 @@ const Header = () => {
 
     const [sets, setSets] = useState<any>()
 
-    
+    const toastMessage = (setId: string) => (
+        <div className="flashcard-toast-message">
+            <div className="flashcard-toast-message__title">Flashcard successfully added!</div>
+            <div className="flashcard-toast-message__link" onClick={() => navigate(`/sets?id=${btoa(setId)}`)}>
+                View it in the Set
+            </div>
+        </div>
+    );
 
-    const onSubmitHandle = () => {
+    const onSubmitHandle = (e: FormEvent) => {
+        e.preventDefault();
         console.log('formData:', formData)
+        createFlashcard(formData.front, formData.back, formData.setId)
         // todo: fix handle submit
     }
 
-
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
+        console.log('e.target:', e.target)
         setFormData({ ...formData, [name]: value });
     };
 
@@ -40,6 +52,23 @@ const Header = () => {
             ...doc.data()
         }));
         setSets(filteredSets)
+    };
+
+    const createFlashcard = async (front: string, back: string, setId: string) => {
+        if(userId) {
+            const flashCard = {
+                front,
+                back,
+                setId,
+                createdAt: new Date(),
+            };
+            const flashCardsCollectionRef = collection(db, `users/${userId}/flashcards`);
+            await addDoc(flashCardsCollectionRef, flashCard);
+
+            toast.success(toastMessage(setId))
+
+            toggleAddFlashCardModal()
+        }
     };
 
     useEffect(() => {
@@ -70,7 +99,8 @@ const Header = () => {
                                 type="select"
                                 onChange={handleInputChange}
                             >
-                                {sets?.map((set: any) => (
+                                <option value="" selected disabled>Choose here</option>
+                                {sets?.map((set: any, index: number) => (
                                     <option key={set.id} value={set.id}>
                                         {set.name}
                                     </option>
