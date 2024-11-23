@@ -97,7 +97,7 @@ const Dashboard = () => {
     return (
         <>
             {/* todo: make a modal component instead: */}
-            <Modal isOpen={isNewSetModalOpen} onClosed={() => setSelectedSetId(undefined)} toggle={toggleNewSetModal}>
+            <Modal centered isOpen={isNewSetModalOpen} onClosed={() => setSelectedSetId(undefined)} toggle={toggleNewSetModal}>
                 <ModalHeader toggle={toggleNewSetModal}>{selectedSetId ? "Edit Set" : "Add New Set"} </ModalHeader>
                 <ModalBody>
                     <NewSetForm data={sets.find(set => set.id === selectedSetId)} refreshEvent={refreshEvent} />

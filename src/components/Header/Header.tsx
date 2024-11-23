@@ -2,17 +2,18 @@ import { Button, Form, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, M
 import staticUserImage from "../../assets/images/user-avatar-static.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
-import { useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import "./scss/Header.scss";
 import { addDoc, collection, getDocs } from "firebase/firestore";
 import store from "../../stores/store";
 import { db } from "../../firebaseConfig";
 import { toast } from "react-toastify";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
 
     const userId = store.getState()?.user?.user?.id
+    const userFullName = store.getState()?.user?.user?.fullName
     const mounted = useRef(true)
     const navigate = useNavigate()
     const [formData, setFormData] = useState<any>({ front: "", back: "", setId: "" })
@@ -21,6 +22,8 @@ const Header = () => {
     const toggleAddFlashCardModal = () => setIsAddFlashCardModalOpen(!isAddFlashCardModalOpen)
 
     const [sets, setSets] = useState<any>()
+
+    const [isFlipped, setIsFlipped] = useState<boolean>(false)
 
     const toastMessage = (setId: string) => (
         <div className="flashcard-toast-message">
@@ -43,6 +46,10 @@ const Header = () => {
         console.log('e.target:', e.target)
         setFormData({ ...formData, [name]: value });
     };
+    
+    const handleInputsFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+        setIsFlipped(e.target.name === "back")
+    }
 
     const fetchSets = async () => {
         const setsRef = collection(db, `users/${userId}/sets`);
@@ -64,9 +71,7 @@ const Header = () => {
             };
             const flashCardsCollectionRef = collection(db, `users/${userId}/flashcards`);
             await addDoc(flashCardsCollectionRef, flashCard);
-
             toast.success(toastMessage(setId))
-
             toggleAddFlashCardModal()
         }
     };
@@ -77,68 +82,97 @@ const Header = () => {
         }
     }, [])
 
-    return (
-        <>
-            <Modal isOpen={isAddFlashCardModalOpen} toggle={toggleAddFlashCardModal}>
-                <ModalHeader toggle={toggleAddFlashCardModal}>Quick Flash Card</ModalHeader>
-                <ModalBody>
-                    <Form id="quickFlashCardForm" onSubmit={onSubmitHandle}>
-                        <FormGroup>
-                            <Label for="front">Front:</Label>
-                            <Input id="front" name="front" type="text" value={formData.front} onChange={handleInputChange} />
-                        </FormGroup>
-                        <FormGroup>
-                            <Label for="back">Back:</Label>
-                            <Input id="back" name="back" type="text" value={formData.back} onChange={handleInputChange} />
-                        </FormGroup>
-                        <FormGroup>
-                            <Label for="setId">Choose a Set:</Label>
-                            <Input
-                                id="setId"
-                                name="setId"
-                                type="select"
-                                onChange={handleInputChange}
-                            >
-                                <option value="" selected disabled>Choose here</option>
-                                {sets?.map((set: any, index: number) => (
-                                    <option key={set.id} value={set.id}>
-                                        {set.name}
-                                    </option>
-                                ))}
-                            </Input>    
-                        </FormGroup>
+    const clearForm = () => {
+        setFormData({ front: "", back: "", setId: "" })
+    }
 
- 
-                    </Form>
-                </ModalBody>
-                <ModalFooter>
-                    <Button color="primary" type="submit" form="quickFlashCardForm">
-                        Add
-                    </Button>
-                    <Button color="secondary" onClick={toggleAddFlashCardModal}>
-                        Close
-                    </Button>
-                </ModalFooter>
-            </Modal>        
-            <div className="header">
-                <div className="header__left">
-                    <div className="header-brand">Flash'em</div>
-                </div>
-                <div className="header__right">
-                    <div className="header-action">
-                        <Button onClick={toggleAddFlashCardModal}>
-                            <FontAwesomeIcon icon={faBolt} />
-                        </Button>
+    return (
+        <> 
+        {/* todo: move quick flashcard to another page/component: */}
+        <Modal size="sm" unmountOnClose onClosed={clearForm} centered isOpen={isAddFlashCardModalOpen} className="quick-flashcard-modal" toggle={toggleAddFlashCardModal}>
+            <ModalHeader>Add Quick Flash Card</ModalHeader>
+            <ModalBody>
+                <Form id="quickFlashCardForm" className="quick-flashcard-form" onSubmit={onSubmitHandle}>
+                    <FormGroup>
+                        <Label for="front">Front:</Label>
+                        <Input 
+                            id="front" 
+                            name="front" 
+                            type="text" 
+                            value={formData.front} 
+                            onChange={handleInputChange}
+                            onFocus={(handleInputsFocus)} 
+                        />
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="back">Back:</Label>
+                        <Input 
+                            id="back" 
+                            name="back" 
+                            type="text" 
+                            value={formData.back} 
+                            onChange={handleInputChange} 
+                            onFocus={(handleInputsFocus)} 
+                        />
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="setId">Choose a Set:</Label>
+                        <Input
+                            id="setId"
+                            name="setId"
+                            type="select"
+                            onChange={handleInputChange}
+                        >
+                            <option value="" selected disabled>Choose here</option>
+                            {sets?.map((set: any, index: number) => (
+                                <option key={set.id} value={set.id}>
+                                    {set.name}
+                                </option>
+                            ))}
+                        </Input>    
+                    </FormGroup>
+                </Form>
+                <div className={`quick-flashcard ${isFlipped ? "quick-flashcard--flipped" : ""}`}>
+                    <div className="quick-flashcard__front">
+                        <div className="quick-flashcard__front__content">
+                            {formData.front}
+                        </div>
                     </div>
-                    <div className="header-user">
-                        <div className="header-user__name">Onur Akşar</div>
-                        <div className="header-user__icon">
-                            {/* todo: fix static profile pic: */}
-                            <img className="header-user__icon__img" src={staticUserImage} alt="static-user-image" /> 
+                    <div className="quick-flashcard__back">
+                        <div className="quick-flashcard__back__content">
+                            {formData.back}
                         </div>
                     </div>
                 </div>
+            </ModalBody>
+            <ModalFooter>
+                <Button color="primary" type="submit" form="quickFlashCardForm">
+                    Add
+                </Button>
+                <Button color="secondary" onClick={toggleAddFlashCardModal}>
+                    Close
+                </Button>
+            </ModalFooter>
+        </Modal>
+        <div className="header">
+            <div className="header__left">
+                <div className="header-brand">Flash'em</div>
             </div>
+            <div className="header__right">
+                <div className="header-action">
+                    <Button onClick={toggleAddFlashCardModal}>
+                        <FontAwesomeIcon icon={faBolt} />
+                    </Button>
+                </div>
+                <div className="header-user">
+                    <div className="header-user__name">{userFullName}</div>
+                    <div className="header-user__icon">
+                        {/* todo: fix static profile pic: */}
+                        <img className="header-user__icon__img" src={staticUserImage} alt="static-user-image" /> 
+                    </div>
+                </div>
+            </div>
+        </div>
         </>
     )
 }

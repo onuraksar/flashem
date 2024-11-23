@@ -1,11 +1,12 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-import { auth } from "../../firebaseConfig";
+import { auth, db } from "../../firebaseConfig";
 import { useNavigate } from "react-router-dom";
 import { Url_Dashboard } from "../../utils/routeHelper";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../stores/userSlice";
 import { cookieLastActivityKey, setCookie } from "../../utils/cookieHelper";
+import { doc, getDoc } from "firebase/firestore";
 
 const SignIn = () => {
 
@@ -25,13 +26,21 @@ const SignIn = () => {
         });
     };
 
+    const getUserData = async (userId: string) => {
+        const userDocRef = doc(db, "users", userId);
+        const userDoc = await getDoc(userDocRef);
+        const userData = userDoc.data()
+        return userData;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         // todo: add toast message when the password is not correct
         try {
             const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
+            const userData = await getUserData(userCredential.user.uid)
             if(userCredential.user) {
-                dispatch(setUser({ id: userCredential.user.uid, email: userCredential.user.email ?? "" }));
+                dispatch(setUser({ id: userCredential.user.uid, email: userCredential.user.email ?? "", fullName: userData?.fullName }));
                 setCookie(cookieLastActivityKey, new Date().toISOString());
                 navigate(Url_Dashboard)
             }

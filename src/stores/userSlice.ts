@@ -4,6 +4,7 @@ interface UserState {
   user: {
     id: string;
     email: string;
+    fullName: string
   } | null;
 }
 
