@@ -2,7 +2,7 @@ import { Button, Form, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, M
 import staticUserImage from "../../assets/images/user-avatar-static.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import "./scss/Header.scss";
 import { addDoc, collection, getDocs } from "firebase/firestore";
 import store from "../../stores/store";
@@ -16,7 +16,7 @@ const Header = () => {
     const userFullName = store.getState()?.user?.user?.fullName
     const mounted = useRef(true)
     const navigate = useNavigate()
-    const [formData, setFormData] = useState<any>({ front: "", back: "", setId: "" })
+    const [formData, setFormData] = useState<any>({ front: "", back: "", setId: "", setName: "" })
 
     const [isAddFlashCardModalOpen, setIsAddFlashCardModalOpen] = useState<boolean>(false)
     const toggleAddFlashCardModal = () => setIsAddFlashCardModalOpen(!isAddFlashCardModalOpen)
@@ -36,15 +36,19 @@ const Header = () => {
 
     const onSubmitHandle = (e: FormEvent) => {
         e.preventDefault();
-        console.log('formData:', formData)
-        createFlashcard(formData.front, formData.back, formData.setId)
+        createFlashcard(formData.front, formData.back, formData.setId, formData.setName)
         // todo: fix handle submit
     }
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        console.log('e.target:', e.target)
-        setFormData({ ...formData, [name]: value });
+        let additionalData = {};
+
+        if (e.target instanceof HTMLSelectElement) {
+            const selectedOption = e.target.selectedOptions[0];
+            const setName = selectedOption?.getAttribute("data-name") ?? "";
+            additionalData = { setName };
+        }
+        setFormData({ ...formData, [name]: value, ...additionalData });
     };
     
     const handleInputsFocus = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -61,12 +65,16 @@ const Header = () => {
         setSets(filteredSets)
     };
 
-    const createFlashcard = async (front: string, back: string, setId: string) => {
+    const createFlashcard = async (front: string, back: string, setId: string, setName: "") => {
         if(userId) {
             const flashCard = {
                 front,
                 back,
                 setId,
+                setName,
+                tagId: "",
+                tagName: "",
+                note: "",
                 createdAt: new Date(),
             };
             const flashCardsCollectionRef = collection(db, `users/${userId}/flashcards`);
@@ -125,7 +133,7 @@ const Header = () => {
                         >
                             <option value="" selected disabled>Choose here</option>
                             {sets?.map((set: any, index: number) => (
-                                <option key={set.id} value={set.id}>
+                                <option key={set.id} value={set.id} data-name={set.name}>
                                     {set.name}
                                 </option>
                             ))}

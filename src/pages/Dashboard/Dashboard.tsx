@@ -64,7 +64,6 @@ const Dashboard = () => {
             // Delete the document
             await deleteDoc(setDocRef);
             refreshEvent()
-            console.log(`Set with ID ${setId} deleted successfully.`);
         } catch (error) {
             console.error("Error deleting set:", error);
         }

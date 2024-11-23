@@ -1,0 +1,68 @@
+@use "../../../scss/template.scss" as *;
+@use "../../../scss/constants.scss" as *;
+
+.flashcard-item, .flashcard-item-add {
+    width: $flashcard-item-width;
+    height: $flashcard-item-height;
+    border: 1px solid $border;
+    padding: 12px;
+    border-radius: $flashcard-item-border-radius;
+}
+
+.flashcard-item-add {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border-color: $accent;
+    transition: all 0.3s ease;
+    &__icon {
+        width: 24px;
+        height: 24px;
+        color: $secondary;
+    }
+    &__label {
+        margin-left: 8px;
+        font-size: 16px;
+        font-weight: 400;
+        color: $secondary;
+    }
+    &:hover {
+        box-shadow: 0px 0px 8px $accent;
+    }
+}
+
+.flashcard-item-container {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.set-detail {
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid $border;
+        padding: 4px 0;
+        &__left {
+            display: flex;
+            align-items: center;
+            &__actions {
+                margin-left: 12px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+        }
+    }
+    &__container {
+        padding: 12px;
+    }
+}
+
+.drop-down-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
