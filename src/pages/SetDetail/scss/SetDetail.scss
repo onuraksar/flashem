@@ -9,6 +9,41 @@
     border-radius: $flashcard-item-border-radius;
 }
 
+.flashcard-item {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    &__top, &__bottom {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 50%;
+        padding: 4px;
+    }
+    &__top {
+        border-bottom: 2px dashed $border;
+    }
+    &__actions {
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 4px;
+        .btn {
+            background-color: transparent;
+            height: 20px;
+            width: 20px;
+            padding: 0;
+            border: none;
+            &:hover {
+                background-color: transparent;
+            }
+            svg {
+                color: $secondary;
+            }
+        }
+    }
+}
+
 .flashcard-item-add {
     display: flex;
     justify-content: center;

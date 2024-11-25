@@ -48,24 +48,21 @@ const Dashboard = () => {
     const fetchCategories = async (uid: string) => {
         try {
             // todo: create a getDoc function to make it global to prevent importing doc, db for all instances:
-          const userDoc = await getDoc(doc(db, "users", uid));
-          const userData = userDoc.data();
-          setCategories(userData?.categories || []);
+          const userDoc = await getDoc(doc(db, "users", uid))
+          const userData = userDoc.data()
+          setCategories(userData?.categories || [])
         } catch (error) {
-          console.error("Error fetching categories:", error);
+          console.error("Error fetching categories:", error)
         }
     }
 
     const onSetDelete = async (setId: string) => {
         try {
-            // Reference the specific set document within the user's sets subcollection
-            const setDocRef = doc(db, `users/${userId}/sets/${setId}`);
-
-            // Delete the document
-            await deleteDoc(setDocRef);
+            const setDocRef = doc(db, `users/${userId}/sets/${setId}`)
+            await deleteDoc(setDocRef)
             refreshEvent()
         } catch (error) {
-            console.error("Error deleting set:", error);
+            console.error("Error deleting set:", error)
         }
     };
 
