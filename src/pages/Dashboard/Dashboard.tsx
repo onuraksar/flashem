@@ -8,6 +8,7 @@ import { collection, deleteDoc, doc, getDoc, getDocs, query, where } from "fireb
 import { db } from "../../firebaseConfig";
 import store from "../../stores/store";
 import { NavLink } from "react-router-dom";
+import ReactStrapModal from "../../components/ReactStrapModal/ReactStrapModal";
 
 const Dashboard = () => {
     const mounted = useRef(true)
@@ -92,21 +93,17 @@ const Dashboard = () => {
 
     return (
         <>
-            {/* todo: make a modal component instead: */}
-            <Modal centered isOpen={isNewSetModalOpen} onClosed={() => setSelectedSetId(undefined)} toggle={toggleNewSetModal}>
-                <ModalHeader toggle={toggleNewSetModal}>{selectedSetId ? "Edit Set" : "Add New Set"} </ModalHeader>
-                <ModalBody>
-                    <NewSetForm data={sets.find(set => set.id === selectedSetId)} refreshEvent={refreshEvent} />
-                </ModalBody>
-                <ModalFooter>
-                    <Button color="primary" type="submit" form="dashboardNewSetForm">
-                        Add
-                    </Button>
-                    <Button color="secondary" onClick={toggleNewSetModal}>
-                        Close
-                    </Button>
-                </ModalFooter>
-            </Modal>
+            <ReactStrapModal
+                formId="dashboardNewSetForm"
+                isOpen={isNewSetModalOpen}
+                onClosed={() => setSelectedSetId(undefined)}
+                toggleEvent={toggleNewSetModal}
+                headerContent={selectedSetId ? "Edit Set" : "Add New Set"}
+                confirmButtonLabel="Add"
+                cancelButtonLabel="Close"
+            >
+                <NewSetForm data={sets.find(set => set.id === selectedSetId)} refreshEvent={refreshEvent} />
+            </ReactStrapModal>
             <div className="dashboard">
                 <div className="dashboard__greeting">
                     <h2 className="dashboard__greeting__header">Welcome to Flash'em! </h2>

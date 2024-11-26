@@ -84,7 +84,6 @@ const SetDetail = () => {
     }
 
     const getData = async() => {
-        console.log('setId:', setId)
         const setIdAtob = atob(setId ?? "")
         await getFlashCardsBySetId(setIdAtob)
     }

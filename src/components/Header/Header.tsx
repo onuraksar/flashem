@@ -9,6 +9,8 @@ import store from "../../stores/store";
 import { db } from "../../firebaseConfig";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import ReactStrapModal from "../ReactStrapModal/ReactStrapModal";
+import QuickFlashCard from "../QuickFlashCard/QuickFlashCard";
 
 const Header = () => {
 
@@ -96,31 +98,35 @@ const Header = () => {
 
     return (
         <> 
-        {/* todo: move quick flashcard to another page/component: */}
-        <Modal size="sm" unmountOnClose onClosed={clearForm} centered isOpen={isAddFlashCardModalOpen} className="quick-flashcard-modal" toggle={toggleAddFlashCardModal}>
-            <ModalHeader>Add Quick Flash Card</ModalHeader>
-            <ModalBody>
+            <ReactStrapModal
+                isOpen={isAddFlashCardModalOpen}
+                formId="quickFlashCardForm"
+                className="quick-flashcard-modal"
+                headerContent="Add Quick Flash Card"
+                toggleEvent={toggleAddFlashCardModal}
+                onClosed={clearForm}
+            >
                 <Form id="quickFlashCardForm" className="quick-flashcard-form" onSubmit={onSubmitHandle}>
                     <FormGroup>
                         <Label for="front">Front:</Label>
-                        <Input 
-                            id="front" 
-                            name="front" 
-                            type="text" 
-                            value={formData.front} 
+                        <Input
+                            id="front"
+                            name="front"
+                            type="text"
+                            value={formData.front}
                             onChange={handleInputChange}
-                            onFocus={(handleInputsFocus)} 
+                            onFocus={(handleInputsFocus)}
                         />
                     </FormGroup>
                     <FormGroup>
                         <Label for="back">Back:</Label>
-                        <Input 
-                            id="back" 
-                            name="back" 
-                            type="text" 
-                            value={formData.back} 
-                            onChange={handleInputChange} 
-                            onFocus={(handleInputsFocus)} 
+                        <Input
+                            id="back"
+                            name="back"
+                            type="text"
+                            value={formData.back}
+                            onChange={handleInputChange}
+                            onFocus={(handleInputsFocus)}
                         />
                     </FormGroup>
                     <FormGroup>
@@ -137,31 +143,16 @@ const Header = () => {
                                     {set.name}
                                 </option>
                             ))}
-                        </Input>    
+                        </Input>
                     </FormGroup>
                 </Form>
-                <div className={`quick-flashcard ${isFlipped ? "quick-flashcard--flipped" : ""}`}>
-                    <div className="quick-flashcard__front">
-                        <div className="quick-flashcard__front__content">
-                            {formData.front}
-                        </div>
-                    </div>
-                    <div className="quick-flashcard__back">
-                        <div className="quick-flashcard__back__content">
-                            {formData.back}
-                        </div>
-                    </div>
-                </div>
-            </ModalBody>
-            <ModalFooter>
-                <Button color="primary" type="submit" form="quickFlashCardForm">
-                    Add
-                </Button>
-                <Button color="secondary" onClick={toggleAddFlashCardModal}>
-                    Close
-                </Button>
-            </ModalFooter>
-        </Modal>
+                <QuickFlashCard 
+                    frontText={formData.front} 
+                    backText={formData.back} 
+                    isFlipped={isFlipped} 
+                />
+            </ReactStrapModal>
+
         <div className="header">
             <div className="header__left">
                 <div className="header-brand">Flash'em</div>
