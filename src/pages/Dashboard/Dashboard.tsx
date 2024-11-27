@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faEye, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useRef, useState } from "react";
-import { Button, Input, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import { Button, Input } from "reactstrap";
 import NewSetForm from "./DashboardNewSetForm/DashboardNewSetForm";
 import "./scss/Dashboard.scss";
 import { collection, deleteDoc, doc, getDoc, getDocs, query, where } from "firebase/firestore";

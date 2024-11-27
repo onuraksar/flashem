@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { setUser } from "../../stores/userSlice";
 import { cookieLastActivityKey, setCookie } from "../../utils/cookieHelper";
 import { doc, getDoc } from "firebase/firestore";
+import "./scss/SignIn.scss";
 
 const SignIn = () => {
 
@@ -51,20 +52,22 @@ const SignIn = () => {
 
     return (
         <div className="signin-form">
-        <h2>Sign In</h2>
-        <form onSubmit={handleSubmit}>
-            <div className="signin-form-field-container">
-                <div className="signin-form-field">
-                    <span className="signin-form-field__label">Email:</span>
-                    <input type="email" name="email"  value={formData.email} onChange={handleChange} />
-                </div>
-                <div className="signin-form-field">
-                    <span className="signin-form-field__label">Password:</span>
-                    <input type="password" name="password"  value={formData.password} onChange={handleChange} />
-                </div>
+            <div className="signin-form__container">
+                <h2 className="signin-form__container__title">Sign In</h2>
+                <form onSubmit={handleSubmit}>
+                    <div className="signin-form-field-container">
+                        <div className="signin-form-field">
+                            <div className="signin-form-field__label">Email:</div>
+                            <input type="email" name="email"  value={formData.email} onChange={handleChange} />
+                        </div>
+                        <div className="signin-form-field">
+                            <div className="signin-form-field__label">Password:</div>
+                            <input type="password" name="password"  value={formData.password} onChange={handleChange} />
+                        </div>
+                    </div>
+                    <button type="submit">Submit</button>                
+                </form>
             </div>
-            <button type="submit">Sign In</button>                
-        </form>
     </div>
     )
 }

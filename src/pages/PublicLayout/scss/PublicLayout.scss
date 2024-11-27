@@ -1,3 +1,38 @@
+@use "../../../scss/template.scss" as *;
+
 .public-layout {
-    background-color: blue;
+    display: flex;
+    gap: 24px;
+    height: 100vh;
+    &__left {
+        flex-basis: 40%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: $primary;
+        font-size: 32px;
+        color: $text-dark;
+        font-weight: 500;
+        border-right: 2px solid $accent;
+    }
+    &__right {
+        flex-basis: 60%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        &__container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid $accent;
+            padding: 12px;
+            width: 80%;
+            height: 60%;
+            border-radius: 12px;
+            background-color: $background;
+        }
+    }
+    &__left, &__right {
+        padding: 24px;
+    }
 }

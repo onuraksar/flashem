@@ -1,7 +1,6 @@
 import { ModalBody, ModalFooter, ModalHeader, Modal, Button } from "reactstrap";
 import { ReactStrapModalProps } from "./types/ReactStrapModalProps";
 import { ReactStrapModalSize } from "./types/ReactStrapModalSize";
-import "./scss/ReactStrapModal.scss";
 
 const ReactStrapModal = (modalProps: ReactStrapModalProps) => {
     const { isOpen, className, toggleEvent, formId, headerContent, size = ReactStrapModalSize.Large, isFullScreen = false, isHideHeader = false, isHideFooter = false, isHideConfirmButton = false, 
