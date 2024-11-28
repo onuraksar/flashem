@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import ReactStrapModal from "../ReactStrapModal/ReactStrapModal";
 import QuickFlashCard from "../QuickFlashCard/QuickFlashCard";
+import { HookForm } from "../HookForm/HookForm";
 
 const Header = () => {
 
@@ -146,6 +147,10 @@ const Header = () => {
                         </Input>
                     </FormGroup>
                 </Form>
+                {/* <HookForm 
+                    id="quickFlashCardForm"
+                    FormComponent={}
+                /> */}
                 <QuickFlashCard 
                     frontText={formData.front} 
                     backText={formData.back} 

@@ -1,11 +1,15 @@
 import { ReactStrapButtonProps } from "./types/ReactStrapButton";
 import "./scss/ReactStrapButton.scss";
+import { Button } from "reactstrap";
 
 const ReactStrapButton = (reactStrapButtonProps: ReactStrapButtonProps) => {
-    const {id} = reactStrapButtonProps;
+    
+    const { id, type } = reactStrapButtonProps;
+
+    // todo: continue configuring:
     return (
         <>
-            ReactStrap Butotn
+            <Button id={id} type={type} />
         </>
     )
 }

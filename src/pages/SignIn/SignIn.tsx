@@ -54,6 +54,7 @@ const SignIn = () => {
         <div className="signin-form">
             <div className="signin-form__container">
                 <h2 className="signin-form__container__title">Sign In</h2>
+                {/* todo: put this in a form component, use component Input and Buttons: */}
                 <form onSubmit={handleSubmit}>
                     <div className="signin-form-field-container">
                         <div className="signin-form-field">
