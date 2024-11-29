@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import ReactStrapModal from "../ReactStrapModal/ReactStrapModal";
 import QuickFlashCard from "../QuickFlashCard/QuickFlashCard";
 import { HookForm } from "../HookForm/HookForm";
+import QuickFlashCardForm from "../../pages/QuickFlashCardForm/QuickFlashCardForm";
 
 const Header = () => {
 
@@ -42,21 +43,21 @@ const Header = () => {
         createFlashcard(formData.front, formData.back, formData.setId, formData.setName)
         // todo: fix handle submit
     }
-    const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        let additionalData = {};
+    // const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    //     const { name, value } = e.target;
+    //     let additionalData = {};
 
-        if (e.target instanceof HTMLSelectElement) {
-            const selectedOption = e.target.selectedOptions[0];
-            const setName = selectedOption?.getAttribute("data-name") ?? "";
-            additionalData = { setName };
-        }
-        setFormData({ ...formData, [name]: value, ...additionalData });
-    };
+    //     if (e.target instanceof HTMLSelectElement) {
+    //         const selectedOption = e.target.selectedOptions[0];
+    //         const setName = selectedOption?.getAttribute("data-name") ?? "";
+    //         additionalData = { setName };
+    //     }
+    //     setFormData({ ...formData, [name]: value, ...additionalData });
+    // };
     
-    const handleInputsFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-        setIsFlipped(e.target.name === "back")
-    }
+    // const handleInputsFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    //     setIsFlipped(e.target.name === "back")
+    // }
 
     const fetchSets = async () => {
         const setsRef = collection(db, `users/${userId}/sets`);
@@ -108,49 +109,12 @@ const Header = () => {
                 onClosed={clearForm}
             >
                 <Form id="quickFlashCardForm" className="quick-flashcard-form" onSubmit={onSubmitHandle}>
-                    <FormGroup>
-                        <Label for="front">Front:</Label>
-                        <Input
-                            id="front"
-                            name="front"
-                            type="text"
-                            value={formData.front}
-                            onChange={handleInputChange}
-                            onFocus={(handleInputsFocus)}
-                        />
-                    </FormGroup>
-                    <FormGroup>
-                        <Label for="back">Back:</Label>
-                        <Input
-                            id="back"
-                            name="back"
-                            type="text"
-                            value={formData.back}
-                            onChange={handleInputChange}
-                            onFocus={(handleInputsFocus)}
-                        />
-                    </FormGroup>
-                    <FormGroup>
-                        <Label for="setId">Choose a Set:</Label>
-                        <Input
-                            id="setId"
-                            name="setId"
-                            type="select"
-                            onChange={handleInputChange}
-                        >
-                            <option value="" selected disabled>Choose here</option>
-                            {sets?.map((set: any, index: number) => (
-                                <option key={set.id} value={set.id} data-name={set.name}>
-                                    {set.name}
-                                </option>
-                            ))}
-                        </Input>
-                    </FormGroup>
+
                 </Form>
-                {/* <HookForm 
+                <HookForm 
                     id="quickFlashCardForm"
-                    FormComponent={}
-                /> */}
+                    FormComponent={QuickFlashCardForm}
+                />
                 <QuickFlashCard 
                     frontText={formData.front} 
                     backText={formData.back} 
