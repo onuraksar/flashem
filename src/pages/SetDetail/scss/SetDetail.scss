@@ -13,6 +13,7 @@
     display: flex;
     flex-direction: column;
     position: relative;
+    $self: &;
     &__top, &__bottom {
         display: flex;
         justify-content: center;
@@ -28,6 +29,9 @@
         top: 0;
         right: 0;
         padding: 4px;
+        visibility: hidden;
+        opacity: 0;
+        transition: all 0.3s ease;
         .btn {
             background-color: transparent;
             height: 20px;
@@ -39,6 +43,14 @@
             }
             svg {
                 color: $secondary;
+            }
+        }
+    }
+    &:hover {
+        #{$self} {
+            &__actions {
+                visibility: visible;
+                opacity: 1;
             }
         }
     }
