@@ -5,12 +5,21 @@ import { Button, Input } from "reactstrap";
 import NewSetForm from "./DashboardNewSetForm/DashboardNewSetForm";
 import "./scss/Dashboard.scss";
 import { collection, deleteDoc, doc, getDoc, getDocs, query, where } from "firebase/firestore";
-import { db } from "../../firebaseConfig";
+import { db, auth } from "../../firebaseConfig";
 import store from "../../stores/store";
 import { NavLink } from "react-router-dom";
 import ReactStrapModal from "../../components/ReactStrapModal/ReactStrapModal";
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import axios from 'axios';
+import { useAuth } from "../../hooks/useAuthHook";
+// const auth = getAuth();
+// const user = auth.currentUser;
 
 const Dashboard = () => {
+
+    const API_URL = 'http://localhost:5000/api/flashcards';
+    const user = useAuth(); // Get the current authenticated user
+
     const mounted = useRef(true)
 
     const userId = store.getState()?.user?.user?.id
@@ -78,9 +87,52 @@ const Dashboard = () => {
         setIsNewSetModalOpen(false)
     }
 
+    const fetchFlashcards = async () => {
+        console.log('currentUuser in fetchFlashcard:', auth.currentUser)
+        if (!user) {
+            console.error("No user logged in");
+            return;
+        }
+        try {
+            const token = await user.getIdToken();
+            console.log('frtonede bearer token:', token)
+            const response = await axios.get(API_URL, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            console.log("flashcard response.data", response.data);
+        } catch (error) {
+            console.error('Error fetching flashcards:', error);
+        }
+    };
+
+
+    
+  useEffect(() => {
+    const fetchFlashcards = async () => {
+      console.log("currentUser in fetchFlashcard:", user);
+      if (!user) {
+        console.error("No user logged in");
+        return;
+      }
+      try {
+        const token = await user.getIdToken();
+        console.log("frontend bearer token:", token);
+        const response = await axios.get(API_URL, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log("flashcard response.data", response.data);
+      } catch (error) {
+        console.error("Error fetching flashcards:", error);
+      }
+    };
+
+    fetchFlashcards();
+  }, [user]); // Ensure effect runs when user state changes
+
     useEffect(() => {
-        if(mounted.current && userId) {
-            fetchCategories(userId)
+        if(userId) {
+            // fetchCategories(userId)
+            // fetchFlashcards()
         }
         return () => {
             mounted.current = false
