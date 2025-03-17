@@ -1,8 +1,6 @@
-import store from "../stores/store";
+import { useSelector } from "react-redux";
 
-export const isAuthorized = () => {
-    if (store.getState()?.user?.user?.id) {
-        return true;
-    }
-    return false;
-}
+export const useIsAuthorized = () => {
+    const user = useSelector((state: any) => state.user?.user);
+    return !!user?.id;
+};

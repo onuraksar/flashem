@@ -42,11 +42,15 @@ const SideMenu = () => {
             </NavLink>
         </div>
         <div className="sidemenu__footer">
-            <button onClick={(e) => {
+            <button onClick={async(e) => {
                 e.preventDefault();
-                dispatch(clearUser());
-                navigate(Url_Sign_In)
-                signOut(auth)
+                try {
+                    await signOut(auth);
+                    dispatch(clearUser());
+                    navigate(Url_Sign_In);
+                  } catch (error) {
+                    console.error("Sign out failed:", error);
+                }
             }} className="signout-btn">Sign Out</button>
         </div>
     </div> 

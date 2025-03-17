@@ -5,11 +5,10 @@ import { Button, Input } from "reactstrap";
 import NewSetForm from "./DashboardNewSetForm/DashboardNewSetForm";
 import "./scss/Dashboard.scss";
 import { collection, deleteDoc, doc, getDoc, getDocs, query, where } from "firebase/firestore";
-import { db, auth } from "../../firebaseConfig";
+import { db } from "../../firebaseConfig";
 import store from "../../stores/store";
 import { NavLink } from "react-router-dom";
 import ReactStrapModal from "../../components/ReactStrapModal/ReactStrapModal";
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import axios from 'axios';
 import { useAuth } from "../../hooks/useAuthHook";
 // const auth = getAuth();
@@ -88,7 +87,6 @@ const Dashboard = () => {
     }
 
     const fetchFlashcards = async () => {
-        console.log('currentUuser in fetchFlashcard:', auth.currentUser)
         if (!user) {
             console.error("No user logged in");
             return;

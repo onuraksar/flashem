@@ -6,12 +6,12 @@ import Dashboard from './pages/Dashboard/Dashboard'
 import PublicLayout from './pages/PublicLayout/PublicLayout'
 import AuthorizedLayout from './pages/AuthorizedLayout/AuthorizedLayout'
 import NotFound from './pages/NotFound/NotFound'
-import SetDetial from './pages/SetDetail/SetDetail'
-import { isAuthorized } from './utils/session'
-
+import SetDetail from './pages/SetDetail/SetDetail'
+import { useIsAuthorized } from './utils/session'
 // todo: add route elements lazy
 
 const App = () => {
+  const isAuthorized = useIsAuthorized();
 
   return (
     <Router>
@@ -19,7 +19,7 @@ const App = () => {
         <Route
           path="/"
           element={
-            isAuthorized() ? (
+            isAuthorized ? (
               <Navigate to="/dashboard" replace />
             ) : (
               <Navigate to="/signin" replace />
@@ -34,7 +34,7 @@ const App = () => {
           <Route
             path="/dashboard"
             element={
-              isAuthorized() ? (
+              isAuthorized ? (
                 <Dashboard />
               ) : (
                 <Navigate to="/signin" replace />
@@ -44,8 +44,8 @@ const App = () => {
           <Route
             path="/sets"
             element={
-              isAuthorized() ? (
-                <SetDetial />
+              isAuthorized ? (
+                <SetDetail />
               ) : (
                 <Navigate to="/signin" replace />
               )
