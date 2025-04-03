@@ -1,23 +1,28 @@
-// backend/models/Flashcard.js
+import mongoose from 'mongoose';
 
-const mongoose = require('mongoose');
-
-// Define the Flashcard schema
 const flashcardSchema = new mongoose.Schema({
-  question: {
+  back: {
     type: String,
     required: true,
   },
-  answer: {
+  front: {
     type: String,
-    required: true,
+    required: true
   },
-  category: {
+  note: {
     type: String,
-    required: true,
+    required: false,
+  },
+  setId: {
+    type: String,
+    required: true
+  },
+  tagId: {
+    type: String,
+    required: false
   },
   userId: {
-    type: String,  // Or you can use `mongoose.Schema.Types.ObjectId` if you reference the user model
+    type: String, 
     required: true,
   },
   createdAt: {
@@ -26,7 +31,6 @@ const flashcardSchema = new mongoose.Schema({
   },
 });
 
-// Create the Flashcard model
 const Flashcard = mongoose.model('Flashcard', flashcardSchema);
 
-module.exports = Flashcard;
+export default Flashcard;

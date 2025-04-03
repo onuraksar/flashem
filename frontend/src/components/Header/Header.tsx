@@ -25,8 +25,6 @@ const Header = () => {
     const [isAddFlashCardModalOpen, setIsAddFlashCardModalOpen] = useState<boolean>(false)
     const toggleAddFlashCardModal = () => setIsAddFlashCardModalOpen(!isAddFlashCardModalOpen)
 
-    const [sets, setSets] = useState<any>()
-
     const [isFlipped, setIsFlipped] = useState<boolean>(false)
 
     const toastMessage = (setId: string) => (
@@ -59,15 +57,6 @@ const Header = () => {
     //     setIsFlipped(e.target.name === "back")
     // }
 
-    const fetchSets = async () => {
-        const setsRef = collection(db, `users/${userId}/sets`);
-        const querySnapshot = await getDocs(setsRef);
-        const filteredSets = querySnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-        setSets(filteredSets)
-    };
 
     const createFlashcard = async (front: string, back: string, setId: string, setName: "") => {
         if(userId) {
@@ -87,12 +76,6 @@ const Header = () => {
             toggleAddFlashCardModal()
         }
     };
-
-    useEffect(() => {
-        if(mounted.current) {
-            fetchSets()
-        }
-    }, [])
 
     const clearForm = () => {
         setFormData({ front: "", back: "", setId: "" })

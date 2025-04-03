@@ -86,24 +86,6 @@ const Dashboard = () => {
         setIsNewSetModalOpen(false)
     }
 
-    const fetchFlashcards = async () => {
-        if (!user) {
-            console.error("No user logged in");
-            return;
-        }
-        try {
-            const token = await user.getIdToken();
-            console.log('frtonede bearer token:', token)
-            const response = await axios.get(API_URL, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            console.log("flashcard response.data", response.data);
-        } catch (error) {
-            console.error('Error fetching flashcards:', error);
-        }
-    };
-
-
     
   useEffect(() => {
     const fetchFlashcards = async () => {
