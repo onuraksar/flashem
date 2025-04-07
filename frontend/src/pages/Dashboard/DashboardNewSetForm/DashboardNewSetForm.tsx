@@ -4,14 +4,21 @@ import { Form, FormGroup, Input, Label } from "reactstrap";
 import { db } from "../../../firebaseConfig";
 import store from "../../../stores/store";
 import { DashboardNewSetFormProps } from "./types/DashboardNewSetFormProps";
+import { useAuth } from "../../../hooks/useAuthHook";
+import axios from "axios";
 
 const DashboardNewSetForm = (dashboardNewSetFormProps: DashboardNewSetFormProps) => {
 
     // todo: refactor this page (add loading, refreshEvent, maybe hookform, prevent rerendering, better prop statement, validation)
+    const API_URL_Categories = 'http://localhost:5000/api/categories';
+    const API_URL_FlashcardSets = 'http://localhost:5000/api/flashcardSets';
 
     const { data, refreshEvent } = dashboardNewSetFormProps;
 
     const mounted = useRef(true)
+
+    const user = useAuth(); // Get the current authenticated user
+    
     
     const userId = store.getState()?.user?.user?.id
     // todo: add model for this any:
@@ -24,26 +31,62 @@ const DashboardNewSetForm = (dashboardNewSetFormProps: DashboardNewSetFormProps)
       setFormData({ ...formData, [name]: value });
     };
     
-    const fetchCategories = async (uid: string) => {
+    const fetchCategories = async() => {
+        if (!user) {
+            console.error("No user logged in");
+            return;
+        }
         try {
-            // todo: create a getDoc function to make it global to prevent importing doc, db for all instances:
-          const userDoc = await getDoc(doc(db, "users", uid));
-          const userData = userDoc.data();
-          setCategories(userData?.categories || []);
+            const token = await user.getIdToken();
+
+            const response = await axios.get(`${API_URL_Categories}/get`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            console.log('response:', response)
+
+            setCategories(response?.data ?? [])
         } catch (error) {
-          console.error("Error fetching categories:", error);
+          console.error("Error fetching categories:", error)
         }
     }
 
     const createSet = async (name: string, categoryId: string ) => {
+        console.log('name:', name)
+        console.log('categoryId:', categoryId)
         if(userId) {
-            const newSet = {
-                name,
-                categoryId,
-                createdAt: new Date(),
-            };
-            const setsCollectionRef = collection(db, `users/${userId}/sets`);
-            await addDoc(setsCollectionRef, newSet);
+            // const newSet = {
+            //     name,
+            //     categoryId,
+            //     createdAt: new Date(),
+            // };
+            
+            if (!user) {
+                console.log("No user logged in");
+                return;
+            }
+            try {
+                const token = await user.getIdToken();
+                await axios.post(
+                    `${API_URL_FlashcardSets}/add`,
+                    {
+                        name,
+                        categoryId
+                    },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+    
+            } catch (error) {
+              console.error("Error fetching categories:", error)
+            }
+            
+            // const setsCollectionRef = collection(db, `users/${userId}/sets`);
+            // await addDoc(setsCollectionRef, newSet);
         }
     };
 
@@ -59,6 +102,8 @@ const DashboardNewSetForm = (dashboardNewSetFormProps: DashboardNewSetFormProps)
     const handleSubmit = (e: FormEvent) => {
         // todo: add validation
         e.preventDefault()
+        // todo: continue from here burada kaldın
+
         if(data) {
             updateSet(data.id, formData.name, formData.categoryId)
         } else {
@@ -69,13 +114,15 @@ const DashboardNewSetForm = (dashboardNewSetFormProps: DashboardNewSetFormProps)
     }   
     
     useEffect(() => {
-        if(mounted.current && userId) {
-            fetchCategories(userId)
-        }
+  
         return () => {
             mounted.current = false
         }
     }, [])
+
+    useEffect(() => {
+        fetchCategories()
+    }, [user])
 
     return(
         <Form onSubmit={handleSubmit} id="dashboardNewSetForm">
@@ -95,7 +142,7 @@ const DashboardNewSetForm = (dashboardNewSetFormProps: DashboardNewSetFormProps)
                 >
                     <option value="" selected disabled hidden>Choose here</option>
                     {categories?.map((category: any) => (
-                        <option key={category.id} value={category.id}>
+                        <option key={category._id} value={category._id}>
                             {category.name}
                         </option>
                     ))}

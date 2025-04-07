@@ -42,14 +42,24 @@ const SignIn = () => {
                 console.log("Auth state changed, user:", user);
                 const userData = await getUserData(user.uid);
                 
-                dispatch(setUser({ 
+                dispatch(setUser({
                     id: user.uid, 
                     email: user.email ?? "", 
                     fullName: userData?.fullName 
                 }));
                 
                 setCookie(cookieLastActivityKey, new Date().toISOString());
-                
+                try {
+                    const token = await user.getIdToken();
+                    await fetch("http://localhost:5000/api/categories/default", {
+                        method: "GET",
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+                } catch (err) {
+                    console.error("Failed to ensure default category", err);
+                }
                 navigate(Url_Dashboard);
             }
         });

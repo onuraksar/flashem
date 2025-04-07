@@ -3,13 +3,39 @@ const router = express.Router();
 import FlashcardSet from '../models/FlashcardSet.js';
 import verifyFirebaseToken from '../middleware/authmiddleWare.js';
 
+// router.get('/get', verifyFirebaseToken, async (req, res) => {
+//   try {
+//     const flashcardSets = await FlashcardSet.find({ userId: req.user.uid }); // Filter flashcard sets by userId
+//     if (!flashcardSets || flashcardSets.length === 0) {
+//       return res.status(404).json({ message: 'No flashcard sets found' });
+//     }
+//     res.json(flashcardSets);  // Send the flashcards as a JSON response
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Server Error' });
+//   }
+// });
+
+
 router.get('/get', verifyFirebaseToken, async (req, res) => {
   try {
-    const flashcardSets = await FlashcardSet.find({ userId: req.user.uid }); // Filter flashcard sets by userId
-    if (!flashcardSets || flashcardSets.length === 0) {
-      return res.status(404).json({ message: 'No flashcard sets found' });
+    const { categoryId, sortBy = 'createdAt', order = 'desc' } = req.query;
+
+    const filters = {
+      userId: req.user.uid, // always secure by user
+    };
+
+    if (categoryId) {
+      filters.categoryId = categoryId;
     }
-    res.json(flashcardSets);  // Send the flashcards as a JSON response
+
+    const sortOrder = order === 'asc' ? 1 : -1;
+
+    const flashcardSets = await FlashcardSet.find(filters).sort({
+      [sortBy]: sortOrder,
+    });
+
+    res.json(flashcardSets);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server Error' });

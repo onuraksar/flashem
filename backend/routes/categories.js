@@ -2,6 +2,7 @@ import express from 'express';
 const router = express.Router();
 import Category from '../models/Category.js';
 import verifyFirebaseToken from '../middleware/authmiddleWare.js';
+import { ensureDefaultCategory } from "../controllers/categoryController.js";
 
 router.get('/get', verifyFirebaseToken, async (req, res) => {
   try {
@@ -37,5 +38,8 @@ router.post('/add', verifyFirebaseToken, async (req, res) => {
     res.status(500).json({ message: 'Error saving category' });
   }
 });
+
+router.get("/default", verifyFirebaseToken, ensureDefaultCategory);
+
 
 export default router;

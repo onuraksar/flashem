@@ -11,13 +11,13 @@ import { NavLink } from "react-router-dom";
 import ReactStrapModal from "../../components/ReactStrapModal/ReactStrapModal";
 import axios from 'axios';
 import { useAuth } from "../../hooks/useAuthHook";
-// const auth = getAuth();
-// const user = auth.currentUser;
 
 const Dashboard = () => {
 
-    const API_URL = 'http://localhost:5000/api/flashcards';
+    const API_URL_Flashcards = 'http://localhost:5000/api/flashcards';
+    const API_URL_Categories = 'http://localhost:5000/api/categories';
     const user = useAuth(); // Get the current authenticated user
+    const API_URL_FlashcardSets = 'http://localhost:5000/api/flashcardSets';
 
     const mounted = useRef(true)
 
@@ -44,22 +44,42 @@ const Dashboard = () => {
     }
 
     const fetchSetsByCategory = async (categoryId: string) => {
-        const setsRef = collection(db, `users/${userId}/sets`);
-        const setsQuery = categoryId === "all" ? setsRef : query(setsRef, where("categoryId", "==", categoryId));
-        const querySnapshot = await getDocs(setsQuery);
-        const filteredSets = querySnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-        setSets(filteredSets)
+        try {
+            if (!user) {
+                throw new Error('User not authenticated');
+            }
+            const idToken = await user.getIdToken();
+
+            const response = await axios.get(`${API_URL_FlashcardSets}/get`, {
+                params: {
+                    categoryId: categoryId === "all" ? undefined : categoryId,
+                },
+                headers: {
+                    Authorization: `Bearer ${idToken}`,
+                },
+            });
+            setSets(response.data);
+        } catch (error) {
+            console.error('Error fetching flashcard sets:', error);
+            throw error;
+        }
     };
 
-    const fetchCategories = async (uid: string) => {
+    const fetchCategories = async() => {
+        if (!user) {
+            console.error("No user logged in");
+            return;
+        }
         try {
-            // todo: create a getDoc function to make it global to prevent importing doc, db for all instances:
-          const userDoc = await getDoc(doc(db, "users", uid))
-          const userData = userDoc.data()
-          setCategories(userData?.categories || [])
+            const token = await user.getIdToken();
+
+            const response = await axios.get(`${API_URL_Categories}/get`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            console.log('response:', response)
+
+            setCategories(response?.data ?? [])
         } catch (error) {
           console.error("Error fetching categories:", error)
         }
@@ -88,31 +108,33 @@ const Dashboard = () => {
 
     
   useEffect(() => {
-    const fetchFlashcards = async () => {
-      console.log("currentUser in fetchFlashcard:", user);
-      if (!user) {
-        console.error("No user logged in");
-        return;
-      }
-      try {
-        const token = await user.getIdToken();
-        console.log("frontend bearer token:", token);
-        const response = await axios.get(API_URL, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        console.log("flashcard response.data", response.data);
-      } catch (error) {
-        console.error("Error fetching flashcards:", error);
-      }
-    };
+    // const fetchFlashcards = async () => {
+    //   console.log("currentUser in fetchFlashcard:", user);
+    //   if (!user) {
+    //     console.error("No user logged in");
+    //     return;
+    //   }
+    //   try {
+    //     const token = await user.getIdToken();
+    //     console.log("frontend bearer token:", token);
+    //     const response = await axios.get(API_URL_Flashcards, {
+    //       headers: { Authorization: `Bearer ${token}` },
+    //     });
+    //     console.log("flashcard response.data", response.data);
+    //   } catch (error) {
+    //     console.error("Error fetching flashcards:", error);
+    //   }
+    // };
 
-    fetchFlashcards();
+    // fetchFlashcards();
+    fetchCategories()
   }, [user]); // Ensure effect runs when user state changes
 
     useEffect(() => {
         if(userId) {
             // fetchCategories(userId)
             // fetchFlashcards()
+            
         }
         return () => {
             mounted.current = false
@@ -120,8 +142,9 @@ const Dashboard = () => {
     }, [])
 
     useEffect(() => {
+        console.log('selectedCategoryId:', selectedCategoryId)
         fetchSetsByCategory(selectedCategoryId)
-    }, [selectedCategoryId, userId])
+    }, [selectedCategoryId, userId, user])
 
     return (
         <>
@@ -151,12 +174,13 @@ const Dashboard = () => {
                                     name="categoryId"
                                     type="select"
                                     onChange={(e) => {
+                                        console.log('e.target.value:', e.target.value)
                                         setSelectedCategoryId(e.target.value)
                                     }}
                                 >
                                     <option value="all" selected >All</option>
                                     {categories?.map((category: any) => (
-                                        <option key={category.id} value={category.id}>
+                                        <option key={category._id} value={category._id}>
                                             {category.name}
                                         </option>
                                     ))}

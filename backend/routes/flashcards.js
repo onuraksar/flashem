@@ -6,7 +6,7 @@ import verifyFirebaseToken from '../middleware/authmiddleWare.js';
 // Example protected route
 
 
-router.get('/', verifyFirebaseToken, async (req, res) => {
+router.get('/get', verifyFirebaseToken, async (req, res) => {
   try {
     const flashcards = await Flashcard.find({ userId: req.user.uid }); // Filter flashcards by userId
     if (!flashcards || flashcards.length === 0) {
